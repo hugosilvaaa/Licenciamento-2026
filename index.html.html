@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turbi - Dashboard Licenciamento 2026 (Looker Studio Executive)</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Chart.js & ChartDataLabels Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    
+    <style>
+        :root {
+            --looker-bg: #f4f6f9;
+            --looker-header: #ffffff;
+            --looker-border: #e2e8f0;
+            --turbi-blue: #1b1464;
+            --turbi-orange: #ff6b00;
+            --turbi-purple: #3b2be0;
+            --turbi-green: #10b981;
+            --turbi-red: #ef4444;
+            --text-main: #0f172a;
+            --text-secondary: #64748b;
+            --card-shadow: 0 4px 20px -2px rgba(27, 20, 100, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+            --card-shadow-hover: 0 10px 25px -5px rgba(27, 20, 100, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--looker-bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* HEADER NAVIGATION */
+        header.looker-nav {
+            background-color: var(--looker-header);
+            border-bottom: 1px solid var(--looker-border);
+            padding: 14px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+
+        .looker-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .looker-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--turbi-blue), var(--turbi-purple));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            box-shadow: 0 4px 10px rgba(27, 20, 100, 0.2);
+        }
+
+        .report-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 19px;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.3px;
+        }
+
+        .turbi-tag {
+            background-color: var(--turbi-orange);
+            color: white;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            box-shadow: 0 2px 6px rgba(255, 107, 0, 0.3);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-looker {
+            background-color: #ffffff;
+            border: 1px solid var(--looker-border);
+            border-radius: 8px;
+            padding: 9px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-looker:hover {
+            background-color: #f8fafc;
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
+        }
+
+        .btn-looker.primary {
+            background: linear-gradient(135deg, var(--turbi-blue), #2a208c);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(27, 20, 100, 0.2);
+        }
+
+        .btn-looker.primary:hover {
+            box-shadow: 0 6px 16px rgba(27, 20, 100, 0.3);
+            transform: translateY(-1px);
+        }
+
+        /* FILTER TOOLBAR */
+        .filter-toolbar {
+            background-color: #ffffff;
+            border-bottom: 1px solid var(--looker-border);
+            padding: 14px 32px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f8fafc;
+            border: 1px solid var(--looker-border);
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .filter-group:hover {
+            border-color: var(--turbi-blue);
+            background: #ffffff;
+        }
+
+        .filter-group label {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-group select {
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .filter-info {
+            font-size: 12px;
+            color: var(--turbi-orange);
+            font-weight: 700;
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 107, 0, 0.08);
+            padding: 6px 14px;
+            border-radius: 20px;
+        }
+
+        /* MAIN CANVAS */
+        main.dashboard-canvas {
+            max-width: 1440px;
+            width: 100%;
+            margin: 24px auto;
+            padding: 0 32px 48px 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* SCORECARDS GRID */
+        .scorecards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .scorecard-card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid var(--looker-border);
+            padding: 20px 22px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.25s ease;
+        }
+
+        .scorecard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .scorecard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--turbi-blue);
+        }
+
+        .scorecard-card.highlight::before {
+            background: var(--turbi-orange);
+        }
+
+        .scorecard-card.success::before {
+            background: var(--turbi-green);
+        }
+
+        .scorecard-title {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 10px;
+        }
+
+        .scorecard-value {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+        }
+
+        .scorecard-sub {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+        }
+
+        /* CHARTS GRID */
+        .charts-row {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+
+        .col-12 { grid-column: span 12; }
+        .col-8  { grid-column: span 8; }
+        .col-6  { grid-column: span 6; }
+        .col-4  { grid-column: span 4; }
+
+        @media (max-width: 1024px) {
+            .col-8, .col-6, .col-4 { grid-column: span 12; }
+        }
+
+        .chart-box {
+            background: #ffffff;
+            border-radius: 14px;
+            border: 1px solid var(--looker-border);
+            padding: 24px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            transition: all 0.25s ease;
+        }
+
+        .chart-box:hover {
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 14px;
+        }
+
+        .chart-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.2px;
+        }
+
+        .chart-title i {
+            color: var(--turbi-blue);
+            background: #e0e7ff;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+        }
+
+        .chart-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .chart-canvas-container {
+            position: relative;
+            width: 100%;
+            height: 310px;
+        }
+
+        /* DATA TABLE */
+        .data-table-container {
+            overflow-x: auto;
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid var(--looker-border);
+        }
+
+        table.looker-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        table.looker-table th {
+            background-color: #f8fafc;
+            color: var(--text-secondary);
+            font-weight: 800;
+            padding: 14px 18px;
+            border-bottom: 2px solid var(--looker-border);
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.6px;
+        }
+
+        table.looker-table td {
+            padding: 14px 18px;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        table.looker-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        table.looker-table tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .badge-uf {
+            background: #e0e7ff;
+            color: var(--turbi-blue);
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+        }
+
+        /* FOOTER */
+        footer.looker-footer {
+            margin-top: auto;
+            background: #ffffff;
+            border-top: 1px solid var(--looker-border);
+            padding: 20px 32px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        footer.looker-footer strong {
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="looker-nav">
+        <div class="looker-brand">
+            <div class="looker-icon"><i class="fa-solid fa-chart-line"></i></div>
+            <div class="report-title">
+                <span>Dashboard de Licenciamento 2026</span>
+                <span class="turbi-tag">Turbi</span>
+            </div>
+        </div>
+        <div class="nav-actions">
+            <button class="btn-looker" onclick="resetFilters()"><i class="fa-solid fa-rotate-left"></i> Limpar Filtros</button>
+            <button class="btn-looker" onclick="exportData()"><i class="fa-solid fa-file-csv"></i> Exportar CSV</button>
+            <button class="btn-looker primary"><i class="fa-solid fa-share-nodes"></i> Compartilhar</button>
+        </div>
+    </header>
+
+    <section class="filter-toolbar">
+        <div class="filter-group">
+            <i class="fa-solid fa-rotate" style="color:var(--turbi-blue);"></i>
+            <label for="cicloFilter">Filtrar Ciclo:</label>
+            <select id="cicloFilter" onchange="applyFilters()">
+                <option value="ALL">Todos os Ciclos (1º ao 6º)</option>
+                <option value="1º CICLO" selected>1º Ciclo Exclusivo</option>
+                <option value="2º CICLO">2º Ciclo</option>
+                <option value="3º CICLO">3º Ciclo</option>
+                <option value="4º CICLO">4º Ciclo</option>
+                <option value="5º CICLO">5º Ciclo</option>
+                <option value="6º CICLO">6º Ciclo</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <i class="fa-solid fa-map-location-dot" style="color:var(--turbi-blue);"></i>
+            <label for="ufFilter">Filtrar por UF:</label>
+            <select id="ufFilter" onchange="applyFilters()">
+                <option value="ALL">Todas as UFs (SP + PR)</option>
+                <option value="SP">São Paulo (SP)</option>
+                <option value="PR">Paraná (PR)</option>
+            </select>
+        </div>
+
+        <div class="filter-info">
+            <i class="fa-solid fa-eye"></i> Valores absolutos diretos nos gráficos
+        </div>
+    </section>
+
+    <main class="dashboard-canvas">
+
+        <!-- SCORECARDS (KPIs DIRETOS) -->
+        <section class="scorecards-grid">
+            <div class="scorecard-card">
+                <div class="scorecard-title">Veículos Elegíveis</div>
+                <div class="scorecard-value" id="kpiVeiculos">1.201</div>
+                <div class="scorecard-sub" id="kpiVeiculosSub"><i class="fa-solid fa-car" style="color:var(--turbi-blue);"></i> Total de veículos</div>
+            </div>
+
+            <div class="scorecard-card highlight">
+                <div class="scorecard-title">Valor Total de Multas</div>
+                <div class="scorecard-value" id="kpiMultasTotal">R$ 2.056.959,67</div>
+                <div class="scorecard-sub" id="kpiMultasSub"><i class="fa-solid fa-triangle-exclamation" style="color:var(--turbi-orange);"></i> Total de multas</div>
+            </div>
+
+            <div class="scorecard-card highlight">
+                <div class="scorecard-title">Multas São Paulo (SP)</div>
+                <div class="scorecard-value" id="kpiMultasSp">R$ 2.018.006,60</div>
+                <div class="scorecard-sub"><i class="fa-solid fa-building-columns" style="color:var(--turbi-purple);"></i> Total de multas SP</div>
+            </div>
+
+            <div class="scorecard-card success">
+                <div class="scorecard-title">Valor Licenciamento</div>
+                <div class="scorecard-value" id="kpiLicencTotal">R$ 206.209,16</div>
+                <div class="scorecard-sub" id="kpiLicencSub"><i class="fa-solid fa-id-card" style="color:var(--turbi-green);"></i> Taxas de licenciamento</div>
+            </div>
+
+            <div class="scorecard-card highlight">
+                <div class="scorecard-title">Desembolso Total</div>
+                <div class="scorecard-value" id="kpiCustoTotal">R$ 2.263.168,83</div>
+                <div class="scorecard-sub"><i class="fa-solid fa-wallet" style="color:var(--turbi-orange);"></i> Licenciamento + Multas</div>
+            </div>
+        </section>
+
+        <section class="charts-row">
+            <!-- GRÁFICO 1: QUANTIDADE DE VEÍCULOS POR CICLO -->
+            <div class="chart-box col-6">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title"><i class="fa-solid fa-chart-column"></i> Quantidade de Veículos por Ciclo de Vencimento</div>
+                        <div class="chart-subtitle">Rótulo de dados diretamente no topo das colunas</div>
+                    </div>
+                </div>
+                <div class="chart-canvas-container">
+                    <canvas id="chartVeiculosPorCiclo"></canvas>
+                </div>
+            </div>
+
+            <!-- GRÁFICO 2: CONSOLIDADO POR CICLO -->
+            <div class="chart-box col-6">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title"><i class="fa-solid fa-chart-line"></i> Total Consolidado por Ciclo (SP/PR)</div>
+                        <div class="chart-subtitle">Licenciamento + Multas com valores indicados acima de cada ponto</div>
+                    </div>
+                </div>
+                <div class="chart-canvas-container">
+                    <canvas id="chartConsolidadoCiclos"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="charts-row">
+            <!-- GRÁFICO 3: VALOR DE LICENCIAMENTO POR CICLO (SP VS PR) -->
+            <div class="chart-box col-6">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title"><i class="fa-solid fa-coins"></i> Valor de Licenciamento em R$ (SP vs PR)</div>
+                        <div class="chart-subtitle">Valores diretos de licenciamento por Estado</div>
+                    </div>
+                </div>
+                <div class="chart-canvas-container">
+                    <canvas id="chartLicenciamentoUf"></canvas>
+                </div>
+            </div>
+
+            <!-- GRÁFICO 4: COMPOSIÇÃO DO CUSTO -->
+            <div class="chart-box col-6">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title"><i class="fa-solid fa-chart-pie"></i> Composição do Custo (Multas vs Licenciamento)</div>
+                        <div class="chart-subtitle">Proporção percentual e valores absolutos em R$</div>
+                    </div>
+                </div>
+                <div class="chart-canvas-container">
+                    <canvas id="chartComposicaoCusto"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="charts-row">
+            <!-- GRÁFICO 5: DISTRIBUIÇÃO POR UF -->
+            <div class="chart-box col-4">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title"><i class="fa-solid fa-pie-chart"></i> Concentração da Frota por Estado</div>
+                        <div class="chart-subtitle">Proporção de veículos entre SP e PR</div>
+                    </div>
+                </div>
+                <div class="chart-canvas-container">
+                    <canvas id="chartVeiculosUf"></canvas>
+                </div>
+            </div>
+
+            <!-- GRÁFICO 6: MULTAS POR ESTADO -->
+            <div class="chart-box col-8">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title"><i class="fa-solid fa-file-invoice-dollar"></i> Volume Total de Multas por Estado</div>
+                        <div class="chart-subtitle">Valores absolutos em R$ com rótulos diretos</div>
+                    </div>
+                </div>
+                <div class="chart-canvas-container">
+                    <canvas id="chartMultasPorEstado"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="chart-box col-12">
+            <div class="chart-header">
+                <div>
+                    <div class="chart-title"><i class="fa-solid fa-table"></i> Tabela Analítica por Ciclo e Estado</div>
+                    <div class="chart-subtitle">Valores consolidados em R$ e quantidade direta de veículos</div>
+                </div>
+            </div>
+            <div class="data-table-container">
+                <table class="looker-table">
+                    <thead>
+                        <tr>
+                            <th>Ciclo</th>
+                            <th>UF</th>
+                            <th>Veículos</th>
+                            <th>Licenciamento Total (R$)</th>
+                            <th>Multas Totais (R$)</th>
+                            <th>Custo Total (R$)</th>
+                            <th>% no Filtro</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Filled dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="looker-footer">
+        <div>
+            <strong>Google Looker Studio Report</strong> | Relatório de <em>Licenciamento Turbi 2026</em>
+        </div>
+        <div>
+            Torre de Controle de Serviços Veiculares | Turbi
+        </div>
+    </footer>
+
+    <script>
+        // Register ChartDataLabels plugin globally
+        Chart.register(ChartDataLabels);
+
+        // CLEANED DATASET FROM SPREADSHEET
+        const baseDataClean = [
+            { ciclo: "1º CICLO", uf: "SP", veiculos: 1165, licenc: 202803.20, multas: 2018006.60 },
+            { ciclo: "1º CICLO", uf: "PR", veiculos: 36,   licenc: 3405.96,   multas: 38953.07 },
+            { ciclo: "2º CICLO", uf: "SP", veiculos: 1222, licenc: 213248.00, multas: 2075582.26 },
+            { ciclo: "2º CICLO", uf: "PR", veiculos: 38,   licenc: 3311.35,   multas: 27679.48 },
+            { ciclo: "3º CICLO", uf: "SP", veiculos: 1314, licenc: 229263.36, multas: 2092646.16 },
+            { ciclo: "3º CICLO", uf: "PR", veiculos: 33,   licenc: 2838.30,   multas: 35566.27 },
+            { ciclo: "4º CICLO", uf: "SP", veiculos: 1198, licenc: 209070.08, multas: 1888391.30 },
+            { ciclo: "4º CICLO", uf: "PR", veiculos: 39,   licenc: 3405.96,   multas: 44861.00 },
+            { ciclo: "5º CICLO", uf: "SP", veiculos: 433,  licenc: 75376.64,  multas: 670287.14 },
+            { ciclo: "5º CICLO", uf: "PR", veiculos: 18,   licenc: 1608.37,   multas: 17112.25 },
+            { ciclo: "6º CICLO", uf: "SP", veiculos: 267,  licenc: 46653.44,  multas: 402707.73 },
+            { ciclo: "6º CICLO", uf: "PR", veiculos: 18,   licenc: 1608.37,   multas: 16393.32 }
+        ];
+
+        let chartVeicCiclo, chartConsol, chartLicencUf, chartComp, chartUf, chartMultasEst;
+
+        function formatCurr(val) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+        }
+
+        function formatCompactCurr(val) {
+            if (val >= 1000000) {
+                return 'R$ ' + (val / 1000000).toFixed(2).replace('.', ',') + 'M';
+            } else if (val >= 1000) {
+                return 'R$ ' + (val / 1000).toFixed(1).replace('.', ',') + 'k';
+            }
+            return formatCurr(val);
+        }
+
+        function formatNum(val) {
+            return new Intl.NumberFormat('pt-BR').format(val);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            applyFilters();
+        });
+
+        function initCharts() {
+            const fontStyle = { family: 'Plus Jakarta Sans', size: 11, weight: '700' };
+
+            /* CHART 1: QUANTIDADE DE VEÍCULOS POR CICLO */
+            const ctxVeic = document.getElementById('chartVeiculosPorCiclo').getContext('2d');
+            chartVeicCiclo = new Chart(ctxVeic, {
+                type: 'bar',
+                data: {
+                    labels: ['1º CICLO', '2º CICLO', '3º CICLO', '4º CICLO', '5º CICLO', '6º CICLO'],
+                    datasets: [{
+                        label: 'Veículos',
+                        data: [0, 0, 0, 0, 0, 0],
+                        backgroundColor: ['#1b1464', '#1b1464', '#ff6b00', '#1b1464', '#1b1464', '#1b1464'],
+                        borderRadius: 6,
+                        barPercentage: 0.65
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: { padding: { top: 28, bottom: 10, left: 10, right: 10 } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) { return ' Veículos: ' + formatNum(ctx.raw); }
+                            }
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            offset: 4,
+                            color: '#0f172a',
+                            font: fontStyle,
+                            formatter: function(val) { return formatNum(val); }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            /* CHART 2: CONSOLIDADO POR CICLO */
+            const ctxConsol = document.getElementById('chartConsolidadoCiclos').getContext('2d');
+            chartConsol = new Chart(ctxConsol, {
+                type: 'line',
+                data: {
+                    labels: ['1º CICLO', '2º CICLO', '3º CICLO', '4º CICLO', '5º CICLO', '6º CICLO'],
+                    datasets: [{
+                        label: 'Desembolso Total (Licenciamento + Multas)',
+                        data: [0, 0, 0, 0, 0, 0],
+                        borderColor: '#ff6b00',
+                        backgroundColor: 'rgba(255, 107, 0, 0.08)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.35,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: '#1b1464',
+                        pointBorderColor: '#ff6b00',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: { padding: { top: 32, bottom: 10, left: 10, right: 10 } },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: { font: { family: 'Inter', size: 12, weight: '600' }, usePointStyle: true }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) { return ' Total: ' + formatCurr(ctx.raw); }
+                            }
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            offset: 6,
+                            color: '#ff6b00',
+                            font: fontStyle,
+                            formatter: function(val) { return formatCompactCurr(val); }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
+                            ticks: { callback: function(val) { return 'R$ ' + (val/1000000).toFixed(1) + 'M'; } }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            /* CHART 3: VALOR DE LICENCIAMENTO EM R$ (SP VS PR) */
+            const ctxLicUf = document.getElementById('chartLicenciamentoUf').getContext('2d');
+            chartLicencUf = new Chart(ctxLicUf, {
+                type: 'bar',
+                data: {
+                    labels: ['São Paulo (SP)', 'Paraná (PR)'],
+                    datasets: [
+                        {
+                            label: 'Valor Licenciamento (R$)',
+                            data: [0, 0],
+                            backgroundColor: ['#1b1464', '#3b2be0'],
+                            borderRadius: 6,
+                            barPercentage: 0.55
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: { padding: { top: 28, bottom: 10, left: 10, right: 10 } },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: { font: { family: 'Inter', size: 12, weight: '600' }, usePointStyle: true, padding: 14 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) { return ' Total Licenciamento: ' + formatCurr(context.raw); }
+                            }
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            offset: 4,
+                            color: '#0f172a',
+                            font: fontStyle,
+                            formatter: function(val) { return formatCompactCurr(val); }
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            /* CHART 4: COMPOSIÇÃO DO CUSTO */
+            const ctx2 = document.getElementById('chartComposicaoCusto').getContext('2d');
+            chartComp = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Multas', 'Licenciamento Anual'],
+                    datasets: [{
+                        data: [0, 0],
+                        backgroundColor: ['#ff6b00', '#1b1464'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: { font: { family: 'Inter', size: 12, weight: '600' }, usePointStyle: true, padding: 16 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) { return context.label + ': ' + formatCurr(context.raw); }
+                            }
+                        },
+                        datalabels: {
+                            color: '#ffffff',
+                            font: { family: 'Plus Jakarta Sans', size: 12, weight: '800' },
+                            formatter: function(value, ctx) {
+                                let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                if (sum === 0) return '0%';
+                                return (value * 100 / sum).toFixed(1) + "%";
+                            }
+                        }
+                    }
+                }
+            });
+
+            /* CHART 5: DISTRIBUIÇÃO DE VEÍCULOS POR UF */
+            const ctx3 = document.getElementById('chartVeiculosUf').getContext('2d');
+            chartUf = new Chart(ctx3, {
+                type: 'pie',
+                data: {
+                    labels: ['São Paulo (SP)', 'Paraná (PR)'],
+                    datasets: [{
+                        data: [0, 0],
+                        backgroundColor: ['#1b1464', '#3b2be0'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: { font: { family: 'Inter', size: 12, weight: '600' }, usePointStyle: true, padding: 16 }
+                        },
+                        datalabels: {
+                            color: '#ffffff',
+                            font: { family: 'Plus Jakarta Sans', size: 12, weight: '800' },
+                            formatter: function(value, ctx) {
+                                let sum = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                if (sum === 0) return '0%';
+                                return (value * 100 / sum).toFixed(1) + "%";
+                            }
+                        }
+                    }
+                }
+            });
+
+            /* CHART 6: VOLUME TOTAL DE MULTAS POR ESTADO */
+            const ctx4 = document.getElementById('chartMultasPorEstado').getContext('2d');
+            chartMultasEst = new Chart(ctx4, {
+                type: 'bar',
+                data: {
+                    labels: ['São Paulo (SP)', 'Paraná (PR)'],
+                    datasets: [{
+                        label: 'Volume Total de Multas (R$)',
+                        data: [0, 0],
+                        backgroundColor: ['#ff6b00', '#3b2be0'],
+                        borderRadius: 6,
+                        barPercentage: 0.55
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: { padding: { top: 28, bottom: 10, left: 10, right: 10 } },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: { font: { family: 'Inter', size: 12, weight: '600' }, usePointStyle: true, padding: 16 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) { return 'Total Multas: ' + formatCurr(context.raw); }
+                            }
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            offset: 4,
+                            color: '#0f172a',
+                            font: fontStyle,
+                            formatter: function(val) { return formatCompactCurr(val); }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
+                            ticks: { callback: function(value) { return 'R$ ' + (value/1000).toFixed(0) + 'k'; } }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function applyFilters() {
+            const selectedCiclo = document.getElementById('cicloFilter').value;
+            const selectedUf = document.getElementById('ufFilter').value;
+
+            // Filter base data
+            let filtered = baseDataClean.filter(item => {
+                let cicloMatch = (selectedCiclo === 'ALL') || (item.ciclo === selectedCiclo);
+                let ufMatch = (selectedUf === 'ALL') || (item.uf === selectedUf);
+                return cicloMatch && ufMatch;
+            });
+
+            let totalVeiculos = filtered.reduce((a, b) => a + b.veiculos, 0);
+            let totalLicenc = filtered.reduce((a, b) => a + b.licenc, 0);
+            let totalMultas = filtered.reduce((a, b) => a + b.multas, 0);
+            let totalCusto = totalLicenc + totalMultas;
+
+            let spMultas = filtered.filter(i => i.uf === 'SP').reduce((a, b) => a + b.multas, 0);
+            let spLicenc = filtered.filter(i => i.uf === 'SP').reduce((a, b) => a + b.licenc, 0);
+            let spVeic = filtered.filter(i => i.uf === 'SP').reduce((a, b) => a + b.veiculos, 0);
+
+            let prMultas = filtered.filter(i => i.uf === 'PR').reduce((a, b) => a + b.multas, 0);
+            let prLicenc = filtered.filter(i => i.uf === 'PR').reduce((a, b) => a + b.licenc, 0);
+            let prVeic = filtered.filter(i => i.uf === 'PR').reduce((a, b) => a + b.veiculos, 0);
+
+            // Update Scorecards
+            document.getElementById('kpiVeiculos').innerText = formatNum(totalVeiculos);
+            document.getElementById('kpiMultasTotal').innerText = formatCurr(totalMultas);
+            document.getElementById('kpiMultasSp').innerText = formatCurr(spMultas);
+            document.getElementById('kpiLicencTotal').innerText = formatCurr(totalLicenc);
+            document.getElementById('kpiCustoTotal').innerText = formatCurr(totalCusto);
+
+            // Update Chart 1: Veículos por Ciclo (filtered by UF filter)
+            const cicloList = ['1º CICLO', '2º CICLO', '3º CICLO', '4º CICLO', '5º CICLO', '6º CICLO'];
+            const veicPerCiclo = cicloList.map(c => {
+                return baseDataClean
+                    .filter(i => i.ciclo === c && (selectedUf === 'ALL' || i.uf === selectedUf))
+                    .reduce((a, b) => a + b.veiculos, 0);
+            });
+            const veicColors = cicloList.map(c => {
+                if (selectedCiclo === 'ALL') {
+                    return c === '3º CICLO' ? '#ff6b00' : '#1b1464';
+                }
+                return c === selectedCiclo ? '#ff6b00' : '#cbd5e1';
+            });
+            chartVeicCiclo.data.datasets[0].data = veicPerCiclo;
+            chartVeicCiclo.data.datasets[0].backgroundColor = veicColors;
+            chartVeicCiclo.options.scales.y.suggestedMax = Math.max(...veicPerCiclo) * 1.25;
+            chartVeicCiclo.update();
+
+            // Update Chart 2: Total Consolidado por Ciclo (filtered by UF filter)
+            const totalPerCiclo = cicloList.map(c => {
+                return baseDataClean
+                    .filter(i => i.ciclo === c && (selectedUf === 'ALL' || i.uf === selectedUf))
+                    .reduce((a, b) => a + (b.licenc + b.multas), 0);
+            });
+            chartConsol.data.datasets[0].data = totalPerCiclo;
+            chartConsol.options.scales.y.suggestedMax = Math.max(...totalPerCiclo) * 1.2;
+            chartConsol.update();
+
+            // Update Chart 3: Licenciamento SP vs PR
+            chartLicencUf.data.datasets[0].data = [spLicenc, prLicenc];
+            chartLicencUf.options.scales.y.suggestedMax = Math.max(spLicenc, prLicenc) * 1.25 || 1000;
+            chartLicencUf.update();
+
+            // Update Chart 4: Composição do Custo (Multas vs Licenciamento)
+            let pctMultas = totalCusto > 0 ? ((totalMultas / totalCusto) * 100).toFixed(1) : '0.0';
+            let pctLicenc = totalCusto > 0 ? ((totalLicenc / totalCusto) * 100).toFixed(1) : '0.0';
+            chartComp.data.labels = [`Multas (${pctMultas}%)`, `Licenciamento Anual (${pctLicenc}%)`];
+            chartComp.data.datasets[0].data = [totalMultas, totalLicenc];
+            chartComp.update();
+
+            // Update Chart 5: Veículos por UF
+            chartUf.data.datasets[0].data = [spVeic, prVeic];
+            chartUf.update();
+
+            // Update Chart 6: Multas por Estado
+            chartMultasEst.data.datasets[0].data = [spMultas, prMultas];
+            chartMultasEst.options.scales.y.suggestedMax = Math.max(spMultas, prMultas) * 1.25 || 1000;
+            chartMultasEst.update();
+
+            populateTable(filtered);
+        }
+
+        function populateTable(data) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            let grandTotal = baseDataClean.reduce((a, b) => a + (b.licenc + b.multas), 0);
+
+            data.forEach(row => {
+                let rowTotal = row.licenc + row.multas;
+                let pct = grandTotal > 0 ? ((rowTotal / grandTotal) * 100).toFixed(1) : '0.0';
+
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${row.ciclo}</strong></td>
+                    <td><span class="badge-uf">${row.uf}</span></td>
+                    <td>${formatNum(row.veiculos)}</td>
+                    <td>${formatCurr(row.licenc)}</td>
+                    <td style="color:#ff6b00; font-weight:700;">${formatCurr(row.multas)}</td>
+                    <td><strong>${formatCurr(rowTotal)}</strong></td>
+                    <td>${pct}%</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function resetFilters() {
+            document.getElementById('cicloFilter').value = '1º CICLO';
+            document.getElementById('ufFilter').value = 'ALL';
+            applyFilters();
+        }
+
+        function exportData() {
+            let csv = "Ciclo,UF,Veiculos,LicenciamentoTotal,MultasTotais,CustoTotal\n";
+            baseDataClean.forEach(r => {
+                let total = r.licenc + r.multas;
+                csv += `${r.ciclo},${r.uf},${r.veiculos},${r.licenc},${r.multas},${total}\n`;
+            });
+            const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csv);
+            const a = document.createElement("a");
+            a.href = encodedUri;
+            a.download = "turbi_licenciamento_base.csv";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
+</body>
+</html>
